@@ -1,0 +1,20 @@
+typedef struct Message {
+    char type;
+    int param;
+    int result;
+} Message;
+
+Message* request_addition(int x){
+    Message* msg = malloc(sizeof(Message));
+    
+    msg->type = 4;
+    msg->param = x;
+    msg->result = process(&msg);
+    return msg;
+}
+int do_tasks(){
+    Message* msg = request_addition(8);
+    int result = msg-> result;
+    free(msg);
+    return result;
+}
