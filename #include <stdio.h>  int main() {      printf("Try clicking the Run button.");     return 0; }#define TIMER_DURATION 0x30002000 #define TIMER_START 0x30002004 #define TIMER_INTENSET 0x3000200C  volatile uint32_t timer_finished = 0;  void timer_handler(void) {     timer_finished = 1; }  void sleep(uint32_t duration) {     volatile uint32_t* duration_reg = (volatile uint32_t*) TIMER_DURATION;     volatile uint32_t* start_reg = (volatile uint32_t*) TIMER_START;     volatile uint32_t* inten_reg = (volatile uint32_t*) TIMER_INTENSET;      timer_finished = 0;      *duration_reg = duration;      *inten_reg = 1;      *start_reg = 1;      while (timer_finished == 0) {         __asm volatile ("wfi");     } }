@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int main() {
+
+    printf("Try clicking the Run button.");
+    return 0;
+}#define TIMER_DURATION 0x30002000
+#define TIMER_START 0x30002004
+#define TIMER_INTENSET 0x3000200C
+
+volatile uint32_t timer_finished = 0;
+
+void timer_handler(void) {
+    timer_finished = 1;
+}
+
+void sleep(uint32_t duration) {
+    volatile uint32_t* duration_reg = (volatile uint32_t*) TIMER_DURATION;
+    volatile uint32_t* start_reg = (volatile uint32_t*) TIMER_START;
+    volatile uint32_t* inten_reg = (volatile uint32_t*) TIMER_INTENSET;
+
+    timer_finished = 0;
+
+    *duration_reg = duration;
+
+    *inten_reg = 1;
+
+    *start_reg = 1;
+
+    while (timer_finished == 0) {
+        __asm volatile ("wfi");
+    }
+}
