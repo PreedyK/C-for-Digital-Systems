@@ -1,0 +1,26 @@
+#define SERIAL_TXD (*(volatile unsigned int*)0x40000000)
+#define SERIAL_READY (*(volatile unsigned int*)0x40000004)
+#define SERIAL_INTENSET (*(volatile unsigned int*)0x40000010)
+
+char* current_char;
+
+void print(char* str) {
+    
+    current_char = str;
+
+    SERIAL_INTENSET = 1;
+
+    while ((SERIAL_READY & 1) == 0) {
+    }
+    if (*current_char != '\0') {
+        SERIAL_TXD + *current_char;
+        current_char++;
+    }
+}
+
+void serial_handler(void) {
+    if (*current_char != '\0') {
+        SERIAL_TXD = *current_char;
+        current_char++;
+    }
+}
